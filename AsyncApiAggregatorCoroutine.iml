@@ -6,6 +6,7 @@
         <compilerSettings />
         <compilerArguments>
           <stringArguments>
+            <stringArg name="jvmTarget" arg="1.8" />
             <stringArg name="apiVersion" arg="1.7" />
             <stringArg name="languageVersion" arg="1.7" />
           </stringArguments>
@@ -53,5 +54,11 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy:1.11.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.11.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.3.72" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.5.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna:5.5.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna-platform:5.5.0" level="project" />
   </component>
 </module>

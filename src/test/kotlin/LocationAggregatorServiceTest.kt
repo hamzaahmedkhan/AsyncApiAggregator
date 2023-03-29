@@ -2,56 +2,33 @@ import client.CityService
 import client.CountryService
 import dto.City
 import dto.Country
-import dto.CountryDetail
-import io.mockk.every
-import io.mockk.mockkObject
-import io.mockk.unmockkAll
-import org.junit.jupiter.api.AfterEach
+import io.mockk.coEvery
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import service.LocationAggregatorService
 
 class LocationAggregatorServiceTest {
+    private lateinit var countryService: CountryService
+    private lateinit var cityService: CityService
 
     @BeforeEach
     fun setup() {
-        mockkObject(CountryService)
-        mockkObject(CityService)
-    }
-
-    @AfterEach
-    fun teardown() {
-        unmockkAll()
+        countryService = mockk()
+        cityService = mockk()
     }
 
     @Test
-    fun testGetCountriesWithCities() {
-        val expectedCountriesWithCities = listOf(
-            CountryDetail("US", "United States", listOf(
-                City("1", "New York", "US"),
-                City("2", "Los Angeles", "US"),
-                City("3", "Chicago", "US")
-            )),
-            CountryDetail("CA", "Canada", listOf(
-                City("4", "Toronto", "CA"),
-                City("5", "Montreal", "CA"),
-                City("6", "Vancouver", "CA")
-            )),
-            CountryDetail("PK", "Pakistan", listOf(
-                City("7", "Lahore", "PK"),
-                City("8", "Karachi", "PK"),
-                City("9", "Islamabad", "PK")
-            ))
-        )
-
-        every { CountryService.getCountries() } returns listOf(
+    fun testGetCountriesWithCities() = runBlocking<Unit> {
+        val expectedCountries = listOf(
             Country("US", "United States"),
             Country("CA", "Canada"),
             Country("PK", "Pakistan")
         )
-
-        every { CityService.getCities() } returns listOf(
+        val expectedCities = listOf(
             City("1", "New York", "US"),
             City("2", "Los Angeles", "US"),
             City("3", "Chicago", "US"),
@@ -62,32 +39,19 @@ class LocationAggregatorServiceTest {
             City("8", "Karachi", "PK"),
             City("9", "Islamabad", "PK")
         )
+        val aggregator = LocationAggregatorService(countryService, cityService)
 
-        val aggregator = LocationAggregatorService()
+        coEvery { countryService.getCountries() } returns expectedCountries
+        coEvery { cityService.getCities() } returns expectedCities
+
         val countriesWithCities = aggregator.getCountriesWithCities()
 
-        assertEquals(expectedCountriesWithCities.size, countriesWithCities.size)
+        assertEquals(expectedCountries.size, countriesWithCities.size)
 
-        for (i in expectedCountriesWithCities.indices) {
-            val expectedCountry = expectedCountriesWithCities[i]
-            val country = countriesWithCities[i]
-
-            assertEquals(expectedCountry.id, country.id)
-            assertEquals(expectedCountry.name, country.name)
-
-            val expectedCities = expectedCountry.cities
-            val cities = country.cities
-
-            assertEquals(expectedCities.size, cities.size)
-
-            for (j in expectedCities.indices) {
-                val expectedCity = expectedCities[j]
-                val city = cities[j]
-
-                assertEquals(expectedCity.id, city.id)
-                assertEquals(expectedCity.name, city.name)
-                assertEquals(expectedCity.countryId, city.countryId)
-            }
+        for (i in expectedCountries.indices) {
+            assertEquals(expectedCountries[i].id, countriesWithCities[i].id)
+            assertEquals(expectedCountries[i].name, countriesWithCities[i].name)
+            assertEquals(expectedCities.filter { it.countryId == expectedCountries[i].id }, countriesWithCities[i].cities)
         }
     }
 }
