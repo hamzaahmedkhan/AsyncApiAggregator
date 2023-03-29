@@ -2,15 +2,16 @@ package service
 
 import client.CityService
 import client.CountryService
-import dto.City
-import dto.Country
+import dto.CountryDetail
 
 class LocationAggregatorService {
-    fun getCountries(): List<Country> {
-        return CountryService.getCountries()
-    }
+    fun getCountriesWithCities(): List<CountryDetail> {
+        val countries = CountryService.getCountries()
+        val cities = CityService.getCities().groupBy { it.countryId }
 
-    fun getCities(): List<City> {
-        return CityService.getCities()
+        return countries.map { country ->
+            val countryCities = cities[country.id]!!
+            CountryDetail(country.id, country.name, countryCities)
+        }
     }
 }

@@ -2,66 +2,92 @@ import client.CityService
 import client.CountryService
 import dto.City
 import dto.Country
+import dto.CountryDetail
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import service.LocationAggregatorService
 
 class LocationAggregatorServiceTest {
+
     @BeforeEach
     fun setup() {
         mockkObject(CountryService)
         mockkObject(CityService)
     }
 
+    @AfterEach
+    fun teardown() {
+        unmockkAll()
+    }
+
     @Test
-    fun testGetCountries() {
-        val expectedCountries = listOf(
+    fun testGetCountriesWithCities() {
+        val expectedCountriesWithCities = listOf(
+            CountryDetail("US", "United States", listOf(
+                City("1", "New York", "US"),
+                City("2", "Los Angeles", "US"),
+                City("3", "Chicago", "US")
+            )),
+            CountryDetail("CA", "Canada", listOf(
+                City("4", "Toronto", "CA"),
+                City("5", "Montreal", "CA"),
+                City("6", "Vancouver", "CA")
+            )),
+            CountryDetail("PK", "Pakistan", listOf(
+                City("7", "Lahore", "PK"),
+                City("8", "Karachi", "PK"),
+                City("9", "Islamabad", "PK")
+            ))
+        )
+
+        every { CountryService.getCountries() } returns listOf(
             Country("US", "United States"),
             Country("CA", "Canada"),
             Country("PK", "Pakistan")
         )
 
-        every { CountryService.getCountries() } returns expectedCountries
-
-        val aggregator = LocationAggregatorService()
-        val countries = aggregator.getCountries()
-
-        assertEquals(expectedCountries.size, countries.size)
-
-        for (i in expectedCountries.indices) {
-            assertEquals(expectedCountries[i].id, countries[i].id)
-            assertEquals(expectedCountries[i].name, countries[i].name)
-        }
-    }
-
-    @Test
-    fun testGetCities() {
-        val expectedCities = listOf(
-            City("NYC", "New York City", "US"),
-            City("LAX", "Los Angeles", "US"),
-            City("TOR", "Toronto", "CA"),
-            City("MTL", "Montreal", "CA"),
-            City("LHR", "London", "GB"),
-            City("MAN", "Manchester", "GB"),
-            City("LHE", "Lahore", "PK"),
-            City("KHI", "Karachi", "PK"),
-            City("ISB", "Islamabad", "PK")
+        every { CityService.getCities() } returns listOf(
+            City("1", "New York", "US"),
+            City("2", "Los Angeles", "US"),
+            City("3", "Chicago", "US"),
+            City("4", "Toronto", "CA"),
+            City("5", "Montreal", "CA"),
+            City("6", "Vancouver", "CA"),
+            City("7", "Lahore", "PK"),
+            City("8", "Karachi", "PK"),
+            City("9", "Islamabad", "PK")
         )
 
-        every { CityService.getCities() } returns expectedCities
-
         val aggregator = LocationAggregatorService()
-        val cities = aggregator.getCities()
+        val countriesWithCities = aggregator.getCountriesWithCities()
 
-        assertEquals(expectedCities.size, cities.size)
+        assertEquals(expectedCountriesWithCities.size, countriesWithCities.size)
 
-        for (i in expectedCities.indices) {
-            assertEquals(expectedCities[i].id, cities[i].id)
-            assertEquals(expectedCities[i].name, cities[i].name)
-            assertEquals(expectedCities[i].countryId, cities[i].countryId)
+        for (i in expectedCountriesWithCities.indices) {
+            val expectedCountry = expectedCountriesWithCities[i]
+            val country = countriesWithCities[i]
+
+            assertEquals(expectedCountry.id, country.id)
+            assertEquals(expectedCountry.name, country.name)
+
+            val expectedCities = expectedCountry.cities
+            val cities = country.cities
+
+            assertEquals(expectedCities.size, cities.size)
+
+            for (j in expectedCities.indices) {
+                val expectedCity = expectedCities[j]
+                val city = cities[j]
+
+                assertEquals(expectedCity.id, city.id)
+                assertEquals(expectedCity.name, city.name)
+                assertEquals(expectedCity.countryId, city.countryId)
+            }
         }
     }
 }
