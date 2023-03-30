@@ -2,7 +2,7 @@ import client.CityService
 import client.CountryService
 import service.LocationAggregatorService
 
-fun main() {
+suspend fun main() {
     val aggregator = LocationAggregatorService(CountryService(), CityService())
 
     val startTime = System.currentTimeMillis()
