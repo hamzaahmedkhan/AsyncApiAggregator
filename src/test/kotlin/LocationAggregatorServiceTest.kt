@@ -4,8 +4,10 @@ import dto.City
 import dto.Country
 import dto.CountryWithCities
 import io.mockk.MockKAnnotations
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,7 +30,7 @@ class LocationAggregatorServiceTest {
             Country("PK", "Pakistan")
         )
 
-        every { countryService.getCountries() } returns expectedCountries
+        coEvery { countryService.getCountries() } returns expectedCountries
     }
 
     fun mockCities() {
@@ -38,11 +40,11 @@ class LocationAggregatorServiceTest {
             City("9", "Islamabad", "PK")
         )
 
-        every { cityService.getCities() } returns expectedCities
+        coEvery { cityService.getCities() } returns expectedCities
     }
 
     @Test
-    fun `get countryWithCities`() {
+    fun `get countryWithCities`() = runTest {
 
         val expectedCountryWithCities = listOf(
             CountryWithCities(

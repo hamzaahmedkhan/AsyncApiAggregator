@@ -5,20 +5,28 @@ import client.CountryService
 import dto.City
 import dto.Country
 import dto.CountryWithCities
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 
 class LocationAggregatorService(
     val countryService: CountryService,
     val cityService: CityService
 ) {
-    suspend fun getCountryWithCities(): List<CountryWithCities> {
+    suspend fun getCountryWithCities(): List<CountryWithCities> = coroutineScope {
 
-        val countries = countryService.getCountries()
-        val cities =  cityService.getCities()
+        val countriesDeferred = async { countryService.getCountries() }
+        val citiesDeferred = async { cityService.getCities() }
+
+        val countries = countriesDeferred.await()
+        val cities = citiesDeferred.await()
+
 
         val citiesMap = cities.groupBy { it.countryId }
-        val countryWithCitiesList = mutableListOf<CountryWithCities>()
-        countries.forEach { countryWithCitiesList.add(CountryWithCities(it.id, it.name, citiesMap[it.id])) }
-        return countryWithCitiesList
+        return@coroutineScope countries.map {
+            CountryWithCities(it.id, it.name, citiesMap[it.id])
+        }
+
     }
 }

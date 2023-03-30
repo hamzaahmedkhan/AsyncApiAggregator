@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 class CityService {
 
     suspend fun getCities(): List<City>{
-        delay(3000)
+        delay(1000)
         return listOf(
             City("1", "New York", "US"),
             City("2", "Los Angeles", "US"),
