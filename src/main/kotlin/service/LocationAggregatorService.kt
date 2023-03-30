@@ -4,16 +4,19 @@ import client.CityService
 import client.CountryService
 import dto.City
 import dto.Country
+import dto.CountryWithCities
 
 class LocationAggregatorService(
     val countryService: CountryService,
     val cityService: CityService
 ) {
-    fun getCountries(): List<Country> {
-        return countryService.getCountries()
-    }
+    fun getCountryWithCities(): List<CountryWithCities> {
+        val countries = countryService.getCountries()
+        val cities = cityService.getCities()
 
-    fun getCities(): List<City>{
-        return cityService.getCities()
+        val citiesMap = cities.groupBy { it.countryId }
+        val countryWithCitiesList = mutableListOf<CountryWithCities>()
+        countries.forEach { countryWithCitiesList.add(CountryWithCities(it.id,it.name, citiesMap[it.id]))  }
+        return countryWithCitiesList
     }
 }
