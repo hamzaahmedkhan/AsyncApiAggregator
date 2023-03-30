@@ -21,4 +21,9 @@ class CityService {
         delay(3000)
         return cities
     }
+
+    suspend fun insert() {
+        // Simulate a 2.5 second delay for a third-party API call
+        delay(1500)
+    }
 }

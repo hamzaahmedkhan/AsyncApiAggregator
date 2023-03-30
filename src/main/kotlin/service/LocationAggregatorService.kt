@@ -19,4 +19,16 @@ class LocationAggregatorService(private val countryService: CountryService, priv
             CountryDetail(country.id, country.name, countryCities)
         }
     }
+
+
+    suspend fun insertCountriesAndCities(): List<CountryDetail> = coroutineScope{
+        CoroutineScope(Dispatchers.IO).launch {
+            countryService.insert()
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            cityService.insert()
+        }
+        return@coroutineScope emptyList()
+    }
 }

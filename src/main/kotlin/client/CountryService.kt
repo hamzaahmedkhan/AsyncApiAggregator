@@ -14,4 +14,10 @@ class CountryService {
             Country("PK", "Pakistan")
         )
     }
+
+
+    suspend fun insert() {
+        // Simulate a 2.5 second delay for a third-party API call
+        delay(2500)
+    }
 }

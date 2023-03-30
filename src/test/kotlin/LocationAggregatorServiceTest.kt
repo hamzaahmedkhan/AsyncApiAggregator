@@ -5,6 +5,7 @@ import dto.Country
 import dto.CountryDetail
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,5 +80,15 @@ class LocationAggregatorServiceTest {
         )
 
         assertEquals(expectedResult, actualResult)
+    }
+
+
+    @Test
+    fun `test insert Countries and Cities`() = runBlocking {
+
+        locationAggregatorService.insertCountriesAndCities()
+
+        coVerify { cityService.insert() }
+        coVerify { countryService.insert() }
     }
 }
