@@ -18,7 +18,7 @@ class CityService {
 
     suspend fun getCities(): List<City> {
         // Simulate a 4 second delay in the API call
-        delay(4000)
+        delay(3000)
         return cities
     }
 }
