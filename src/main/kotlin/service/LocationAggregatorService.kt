@@ -2,21 +2,23 @@ package service
 
 import client.CityService
 import client.CountryService
+import dto.City
+import dto.Country
 import dto.CountryDetail
-import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 
 class LocationAggregatorService(private val countryService: CountryService, private val cityService: CityService) {
 
-    suspend fun getCountriesWithCities(): List<CountryDetail> = coroutineScope{
-        val countriesDeferred = async { countryService.getCountries() }
-        val citiesDeferred = async { cityService.getCities() }
+    fun getCountriesWithCities(): Flow<List<CountryDetail>> = flow {
+        val countries = countryService.getCountries()
+        val cities = cityService.getCities().groupBy { it.countryId }
 
-        val countries = countriesDeferred.await()
-        val cities = citiesDeferred.await().groupBy { it.countryId }
-
-        return@coroutineScope countries.map { country ->
+        val countryDetails = countries.map { country ->
             val countryCities = cities[country.id] ?: emptyList()
             CountryDetail(country.id, country.name, countryCities)
         }
+        emit(countryDetails)
     }
 }
