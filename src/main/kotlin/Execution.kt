@@ -6,11 +6,13 @@ suspend fun main() {
     val aggregator = LocationAggregatorService(CountryService(), CityService())
 
     val startTime = System.currentTimeMillis()
-    aggregator.getCountriesWithCities().collect {
-        val endTime = System.currentTimeMillis()
-
-        println("Total time taken to fetch countries and cities: ${endTime - startTime} ms")
-        println(it.toString())
+    val data = aggregator.getCountriesWithCities().collect {
+        it
     }
+
+    val endTime = System.currentTimeMillis()
+
+    println("Total time taken to fetch countries and cities: ${endTime - startTime} ms")
+    println(data.toString())
 
 }
