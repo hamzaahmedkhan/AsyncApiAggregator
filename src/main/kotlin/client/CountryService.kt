@@ -1,11 +1,12 @@
 package client
 
 import dto.Country
+import kotlinx.coroutines.delay
 
 class CountryService {
-    fun getCountries(): List<Country> {
+    suspend fun getCountries(): List<Country> {
         // Simulate a 2.5 second delay for a third-party API call
-        Thread.sleep(2500)
+        delay(2500)
 
         return listOf(
             Country("US", "United States"),

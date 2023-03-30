@@ -1,11 +1,12 @@
 package client
 
 import dto.City
+import kotlinx.coroutines.delay
 
 class CityService {
 
-    fun getCities(): List<City>{
-        Thread.sleep(3000)
+    suspend fun getCities(): List<City>{
+        delay(3000)
         return listOf(
             City("1", "New York", "US"),
             City("2", "Los Angeles", "US"),

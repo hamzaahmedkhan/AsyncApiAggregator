@@ -1,20 +1,23 @@
 import client.CityService
 import client.CountryService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import service.LocationAggregatorService
 
-fun main() {
+suspend fun main() {
     val cityService = CityService()
     val countryService = CountryService()
 
     val aggregator = LocationAggregatorService(countryService, cityService)
 
     val startTime = System.currentTimeMillis()
-    println("Start time ${System.currentTimeMillis()-startTime}")
+    println("Start time ${System.currentTimeMillis() - startTime}")
 
     val countryWithCities = aggregator.getCountryWithCities()
 
     val endTime = System.currentTimeMillis()
-    println("End time ${System.currentTimeMillis()-startTime}")
+    println("End time ${System.currentTimeMillis() - startTime}")
 
     println("Total time taken: ${endTime - startTime} ms")
 
